@@ -1,5 +1,10 @@
 package Classes;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,38 +16,82 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Vigia extends Thread{
-	int i;
+	private File path;
 	public void run() {
-		while(true) {
-			try(WatchService service = FileSystems.getDefault().newWatchService()){
-				Map<WatchKey, Path> keyMap= new HashMap<>(); 
-				
-				Path path= Paths.get("C:/Users/Gileno/eclipse-workspace/LeitorDeArquivosComTread/src/Classes/inicial");
-				
-				keyMap.put(path.register(service, StandardWatchEventKinds.ENTRY_CREATE), path);
-				WatchKey watchkey;
-				watchkey= service.take();
-				
-				
-				
-				//Path eventDir= keyMap.get(watchkey);
-				
-				/*for(WatchEvent<?> event :watchkey.pollEvents() ) {
-					WatchEvent.Kind<?> kind= event.kind();
-					Path eventPath= (Path)event.context();
-					
-					System.out.println(eventDir + " : "+ kind +" : "+ eventPath );
-				}*/
-				
-			}catch(Exception e) {
-				e.printStackTrace();
-				
+		int i=0;
+		while(i<1) {
+			if(visualizador()!=null) {
+				String resultado= visualizador();
+				System.out.println(resultado);
+				System.out.println(this.path);
+			
 			}
 			
 			i++;
 			
+			
 		}
 		
 	}
+	
+	public String visualizador(){
+		 File file = new File("C:/Users/Gileno/eclipse-workspace/LeitorDeArquivosComTread/src/Classes/inicial");
+		 int i=0;
+		 File[] tamanho= file.listFiles();
+		 if (tamanho.length!=0) {
+			 File afile[] = file.listFiles();
+			 for(i=0; i<afile.length; i++) {
+				 String f;
+				 if((f=lerArq(afile[i]))!= null) {
+					 this.path=afile[i];
+					 return f;
+					 
+				 }
+				 
+			 }
+			 }else {
+				System.out.println("Sem arquivos"); 
+		 }
+		return null;	 
+	}
+	
+	
+	public String lerArq(File arquivo) {
+		FileReader fr= null;
+		
+		
+		try {
+			fr= new FileReader(arquivo);
+			BufferedReader ler= new BufferedReader(fr);
+			String linha;
+			do{
+				linha= ler.readLine();
+				String f= addBuffer(linha.length(), linha);
+				return f;
+				
+			}while(linha!=null && linha!=" ");
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}catch(IOException e) {
+			e.printStackTrace();
+			
+		}
+		return null;
+	}
+	
+	public String addBuffer(int  tamanho, String l) {
+		String linha[]= new String[tamanho];
+		
+		int i=0;
+		for(i=0; i<linha.length; i++) {
+			linha[i]= l;
+			return linha[i];
+		}
+		return l;
+	}
+
 
 }
