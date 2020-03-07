@@ -16,60 +16,87 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Vigia extends Thread{
-	private File path;
+	private File[] path;
+	private File dst;
+	private String[] f =null;
+	private BufferedReader ler;
 	public void run() {
 		int i=0;
-		while(i<1) {
+		while(true) {
 			if(visualizador()!=null) {
-				String resultado= visualizador();
+				String[] resultado= visualizador();
 				System.out.println(resultado);
 				System.out.println(this.path);
-			
+				for(i=0; i<path.length; i++) {
+					MoveDir.cpoiaArq(path, path[i].getName());
+					
+				}
+				
+				
+			} else {
+				System.out.println("entrou");
+				try {
+					System.out.println("Thread de vigia adormeceu");
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					System.out.println("a treade de vigia Não Adormeceu");
+					e.printStackTrace();
+				}
+				
 			}
-			
-			i++;
-			
 			
 		}
 		
 	}
 	
-	public String visualizador(){
+	//lista arquivos na pasta 
+	public String[] visualizador(){
 		 File file = new File("C:/Users/Gileno/eclipse-workspace/LeitorDeArquivosComTread/src/Classes/inicial");
 		 int i=0;
-		 File[] tamanho= file.listFiles();
+		 File[] tamanho= file.listFiles();//joga o tamanho do arquivo e joga no array
 		 if (tamanho.length!=0) {
+			 //System.out.println("entrou");
 			 File afile[] = file.listFiles();
+			 //System.out.println(afile[0]);
+			
 			 for(i=0; i<afile.length; i++) {
-				 String f;
-				 if((f=lerArq(afile[i]))!= null) {
-					 this.path=afile[i];
-					 return f;
-					 
+				 this.f[i]=lerArq(afile[i]);// TA DANDO ERRO NO CARAI DO ADDBUFFER
+				 if(f[i]!=null) {
+					 System.out.println(f[i]+" Position "+i);
+					 this.path[i]=afile[i]; 
+				 }else {
+					 System.out.println("valor nulo"+ f[i]);
 				 }
-				 
 			 }
-			 }else {
-				System.out.println("Sem arquivos"); 
+			 return f;
 		 }
+		 
 		return null;	 
 	}
 	
 	
-	public String lerArq(File arquivo) {
-		FileReader fr= null;
+	
+	public String lerArq(File afile) {
+		
+		FileReader fr;
 		
 		
 		try {
-			fr= new FileReader(arquivo);
-			BufferedReader ler= new BufferedReader(fr);
+			fr= new FileReader(afile);
+			ler = new BufferedReader(fr);
 			String linha;
 			do{
 				linha= ler.readLine();
-				String f= addBuffer(linha.length(), linha);
+				System.out.println("essa é a linha"+linha);
+				String f= addBuffer(linha);	
+				
+				System.out.println("Valor da variavel que recebe o addBuffer "+ f);
+				
 				return f;
 				
+				
 			}while(linha!=null && linha!=" ");
+			
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -79,19 +106,18 @@ public class Vigia extends Thread{
 			e.printStackTrace();
 			
 		}
+		
 		return null;
 	}
 	
-	public String addBuffer(int  tamanho, String l) {
-		String linha[]= new String[tamanho];
+	public String addBuffer(String l) {
+		FilaArquivos f= new FilaArquivos();
 		
-		int i=0;
-		for(i=0; i<linha.length; i++) {
-			linha[i]= l;
-			return linha[i];
-		}
-		return l;
-	}
+		f.inserir(l);
+		System.out.println("Visualizar do addbuffer "+f.visualizar());
+		
+		return f.visualizar();
 
-
+}
+	
 }
